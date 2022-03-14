@@ -1,21 +1,43 @@
-const newTodoInput = document.querySelector('input');
-const addTodoBtn = document.querySelector('button');
-const todolist = document.querySelector('div.todos');
-let count = 0;
-addTodoBtn.onclick = function(){
+const compBtn = document.querySelector('button#comp');
+const pendBtn = document.querySelector('button#pend');
+const allTask = document.querySelector('button#all');
+const todoList = document.querySelector('div.todos');
+
+fetchtodo();
+
+
+async function fetchtodo(){
+    let res=await fetch('https://jsonplaceholder.typicode.com/todos');
+    let data=await res.json();
     
-    let input = newTodoInput.value;
-    if(input.length === 0) {
-    alert("Please enter a task");
-    } else {
-    let p = document.createElement("p")
-    p.setAttribute("key",count)
-    p.innerHTML = input
-    todolist.appendChild(p)
-    
-    document.querySelector(`p[key="${count}"]`).addEventListener('click',function(){
-        todolist.removeChild(this)
-    })
-    count++;
-    }
+    allTask.addEventListener("click", () => {
+        loadItems(data);
+        });
+    compBtn.addEventListener("click", () => {
+        let completedTodoList = data.filter(ele => ele.completed);
+        loadItems(completedTodoList);
+    });
+    pendBtn.addEventListener("click", () => {
+        let pendingTodoList = data.filter(ele => !ele.completed);
+        loadItems(pendingTodoList);
+    });
 }
+    
+
+function loadItems(data){
+        let output='';
+    data.forEach((todo) => {
+        let trig 
+        if (todo.completed) {
+            trig = "Completed"
+        }
+        else {
+            trig = "Pending"
+        }
+        output+=`<div class="whole_value">
+                <h4>${todo.title}</h4>
+                <p >UserId : ${todo.userId}</p>
+                <p >ID : ${todo.id}</p>
+                <p >Status : ${trig}</p>
+                </div>`
+}); todoList.innerHTML=output;}
